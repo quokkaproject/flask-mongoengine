@@ -23,13 +23,13 @@ except:
 test_requirements = ['nose', 'rednose', 'coverage']
 
 setup(
-    name='flask-mongoengine',
+    name='quokka-flask-mongoengine',
     version='0.7.2',
     url='https://github.com/mongoengine/flask-mongoengine',
     license='BSD',
     author='Ross Lawley',
     author_email='ross.lawley@gmail.com',
-    description='Flask support for MongoDB and with WTF model forms',
+    description='Fork of Flask support for MongoDB and with WTF model forms',
     long_description=__doc__,
     test_suite='nose.collector',
     zip_safe=False,
