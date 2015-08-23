@@ -35,6 +35,7 @@ updates = []
 removes = []
 response_sizes = []
 
+
 # Wrap helpers._unpack_response for getting response size
 @functools.wraps(_original_methods['_unpack_response'])
 def _unpack_response(response, *args, **kwargs):
@@ -46,6 +47,7 @@ def _unpack_response(response, *args, **kwargs):
     )
     response_sizes.append(sys.getsizeof(response) / 1024.0)
     return result
+
 
 # Wrap Cursor.insert for getting queries
 @functools.wraps(_original_methods['insert'])
@@ -61,7 +63,7 @@ def _insert(collection_self, doc_or_docs, manipulate=True,
     )
     total_time = (time.time() - start_time) * 1000
 
-    __traceback_hide__ = True
+    __traceback_hide__ = True  # noqa
     stack_trace, internal = _tidy_stacktrace()
     inserts.append({
         'document': doc_or_docs,
@@ -72,6 +74,7 @@ def _insert(collection_self, doc_or_docs, manipulate=True,
         'internal': internal
     })
     return result
+
 
 # Wrap Cursor.update for getting queries
 @functools.wraps(_original_methods['update'])
@@ -89,7 +92,7 @@ def _update(collection_self, spec, document, upsert=False,
     )
     total_time = (time.time() - start_time) * 1000
 
-    __traceback_hide__ = True
+    __traceback_hide__ = True  # noqa
     stack_trace, internal = _tidy_stacktrace()
     updates.append({
         'document': document,
@@ -104,6 +107,7 @@ def _update(collection_self, spec, document, upsert=False,
     })
     return result
 
+
 # Wrap Cursor.remove for getting queries
 @functools.wraps(_original_methods['remove'])
 def _remove(collection_self, spec_or_id, safe=None, **kwargs):
@@ -116,7 +120,7 @@ def _remove(collection_self, spec_or_id, safe=None, **kwargs):
     )
     total_time = (time.time() - start_time) * 1000
 
-    __traceback_hide__ = True
+    __traceback_hide__ = True  # noqa
     stack_trace, internal = _tidy_stacktrace()
     removes.append({
         'spec_or_id': spec_or_id,
@@ -127,6 +131,7 @@ def _remove(collection_self, spec_or_id, safe=None, **kwargs):
         'internal': internal
     })
     return result
+
 
 # Wrap Cursor._refresh for getting queries
 @functools.wraps(_original_methods['refresh'])
@@ -169,11 +174,11 @@ def _cursor_refresh(cursor_self):
         if snapshot:
             query_son["$snapshot"] = snapshot
 
-        maxScan = privar("max_scan")
+        maxScan = privar("max_scan")  # noqa
         if maxScan:
             query_son["$maxScan"] = maxScan
 
-    __traceback_hide__ = True
+    __traceback_hide__ = True  # noqa
     stack_trace, internal = _tidy_stacktrace()
     query_data = {
         'time': total_time,
@@ -209,6 +214,7 @@ def _cursor_refresh(cursor_self):
 
     return result
 
+
 def install_tracker():
     if pymongo.collection.Collection.insert != _insert:
         pymongo.collection.Collection.insert = _insert
@@ -221,6 +227,7 @@ def install_tracker():
     if pymongo.helpers._unpack_response != _unpack_response:
         pymongo.helpers._unpack_response = _unpack_response
 
+
 def uninstall_tracker():
     if pymongo.collection.Collection.insert == _insert:
         pymongo.collection.Collection.insert = _original_methods['insert']
@@ -231,7 +238,9 @@ def uninstall_tracker():
     if pymongo.cursor.Cursor._refresh == _cursor_refresh:
         pymongo.cursor.Cursor._refresh = _original_methods['cursor_refresh']
     if pymongo.helpers._unpack_response == _unpack_response:
-        pymongo.helpers._unpack_response = _original_methods['_unpack_response']
+        pymongo.helpers._unpack_response = _original_methods[
+            '_unpack_response']
+
 
 def reset():
     global queries, inserts, updates, removes, response_sizes
@@ -240,6 +249,7 @@ def reset():
     updates = []
     removes = []
     response_sizes = []
+
 
 def _get_ordering(son):
     """Helper function to extract formatted ordering from dict.
@@ -250,11 +260,13 @@ def _get_ordering(son):
     if '$orderby' in son:
         return ', '.join(fmt(f, d) for f, d in son['$orderby'].items())
 
+
 def _tidy_stacktrace():
     """
     Tidy the stack_trace
     """
-    socketserver_path = os.path.realpath(os.path.dirname(SocketServer.__file__))
+    socketserver_path = os.path.realpath(
+        os.path.dirname(SocketServer.__file__))
     pymongo_path = os.path.realpath(os.path.dirname(pymongo.__file__))
     paths = ['/site-packages/', '/flaskext/', socketserver_path, pymongo_path]
     internal = False
