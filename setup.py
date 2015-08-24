@@ -24,7 +24,7 @@ test_requirements = ['nose', 'rednose', 'coverage']
 
 setup(
     name='quokka-flask-mongoengine',
-    version='0.7.3',
+    version='0.7.4',
     url='https://github.com/mongoengine/flask-mongoengine',
     license='BSD',
     author='Ross Lawley',
